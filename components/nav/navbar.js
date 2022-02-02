@@ -8,6 +8,9 @@ const NavBar = ({ username }) => {
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const handleLogout = () => {
+    router.replace("/login");
+  };
   const handleOnClickMyList = (e) => {
     e.preventDefault();
     console.log("MyList Link clicked");
@@ -57,12 +60,10 @@ const NavBar = ({ username }) => {
 
             {showDropdown && (
               <div className={styles.navDropdown}>
-                <div>
-                  <Link href="/login">
-                    <a className={styles.linkName}>Sign out</a>
-                  </Link>
-                  <div className={styles.lineWrapper}></div>
-                </div>
+                <a className={styles.linkName} onClick={handleLogout}>
+                  Sign out
+                </a>
+                <div className={styles.lineWrapper}></div>
               </div>
             )}
           </div>

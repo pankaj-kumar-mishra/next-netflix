@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../styles/login.module.css";
 import { validateEmail } from "../utils/helper";
+import { magic } from "../lib/magic-client";
 
 const Login = () => {
   const router = useRouter();
@@ -12,11 +13,34 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [userMsg, setUserMsg] = useState("");
 
-  const handleLoginWithEmail = () => {
+  useEffect(() => {
+    const handleComplete = () => {
+      setLoading(false);
+    };
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleComplete);
+      router.events.off("routeChangeError", handleComplete);
+    };
+  }, [router]);
+
+  const handleLoginWithEmail = async () => {
     setLoading(true);
     if (validateEmail(email)) {
-      console.log("Handle Login");
-      router.replace("/");
+      try {
+        const didToken = await magic.auth.loginWithMagicLink({
+          email,
+        });
+        console.log(didToken);
+        if (didToken) {
+          router.replace("/");
+        }
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
     } else {
       // show user message
       setLoading(false);

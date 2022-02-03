@@ -1,16 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { magic } from "../../lib/magic-client";
 import styles from "./navbar.module.css";
 
-const NavBar = ({ username }) => {
+const NavBar = () => {
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
-  const handleLogout = () => {
-    router.replace("/login");
+  const handleGetEmail = async () => {
+    try {
+      const userData = await magic.user.getMetadata();
+      console.log({ userData });
+      if (userData.email) {
+        setUserEmail(userData.email);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  useEffect(() => {
+    handleGetEmail();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await magic.user.logout();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      router.replace("/login");
+    }
+  };
+
   const handleOnClickMyList = (e) => {
     e.preventDefault();
     console.log("MyList Link clicked");
@@ -48,7 +73,7 @@ const NavBar = ({ username }) => {
         <nav className={styles.navContainer}>
           <div>
             <button className={styles.usernameBtn} onClick={handleShowDropdown}>
-              <p className={styles.username}>{username}</p>
+              <p className={styles.username}>{userEmail}</p>
               {/** Expand more icon */}
               <Image
                 src={"/static/expand_more.svg"}

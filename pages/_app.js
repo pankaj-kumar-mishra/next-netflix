@@ -6,7 +6,7 @@ import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // TODO  make if 'true' after video info ui complete
 
   useEffect(() => {
     const handleComplete = () => {
@@ -22,7 +22,6 @@ function MyApp({ Component, pageProps }) {
   }, [router]);
 
   const handleAuthRoute = async () => {
-    setLoading(true);
     const isLoggedIn = await magic.user.isLoggedIn();
     if (isLoggedIn) {
       router.replace("/");
@@ -32,7 +31,8 @@ function MyApp({ Component, pageProps }) {
   };
 
   useEffect(() => {
-    handleAuthRoute();
+    // TODO uncomment below line after video info page ui complete
+    // handleAuthRoute();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

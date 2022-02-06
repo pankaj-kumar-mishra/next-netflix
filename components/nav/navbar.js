@@ -13,7 +13,8 @@ const NavBar = () => {
   const handleGetEmail = async () => {
     try {
       const userData = await magic.user.getMetadata();
-      console.log({ userData });
+      // console.log({ userData });
+      // console.log(await magic.user.generateIdToken());
       if (userData.email) {
         setUserEmail(userData.email);
       }

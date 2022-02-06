@@ -6,7 +6,8 @@ import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false); // TODO  make if 'true' after video info ui complete
+  // TODO  make if 'true' after video info ui complete
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleComplete = () => {

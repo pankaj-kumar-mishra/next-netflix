@@ -7,14 +7,14 @@ import styles from "../styles/Home.module.css";
 
 export async function getServerSideProps() {
   // const disneyVideos = [];
-  // const productivityVideos = [];
-  // const travelVideos = [];
-  // const popularVideos = [];
+  const productivityVideos = [];
+  const travelVideos = [];
+  const popularVideos = [];
 
   const disneyVideos = await getVideos("disney trailer");
-  const productivityVideos = await getVideos("productivity");
-  const travelVideos = await getVideos("travel");
-  const popularVideos = await getPopularVideos();
+  // const productivityVideos = await getVideos("productivity");
+  // const travelVideos = await getVideos("travel");
+  // const popularVideos = await getPopularVideos();
 
   return {
     props: { disneyVideos, productivityVideos, travelVideos, popularVideos },

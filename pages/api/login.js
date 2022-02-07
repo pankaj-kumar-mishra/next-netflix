@@ -45,7 +45,7 @@ const login = async (req, res) => {
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ status: false, message: "Something went wrong" });
+      res.status(500).json({ status: false, message: error?.message });
     }
   } else {
     res.status(500).json({

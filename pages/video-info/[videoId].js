@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Modal from "react-modal";
 import cls from "classnames";
@@ -5,7 +6,10 @@ import styles from "../../styles/video-info.module.css";
 import { getYoutubeVideoById } from "../../lib/youtube";
 import NavBar from "../../components/nav/navbar";
 
-// ? root element in react "root" but in next js "__next"
+import Like from "../../components/icons/like-icon";
+import DisLike from "../../components/icons/dislike-icon";
+
+// NOTE root element in react "root" but in next js "__next"
 Modal.setAppElement("#__next");
 
 export async function getStaticProps(context) {
@@ -31,7 +35,10 @@ export async function getStaticPaths() {
 
 const VideoInfo = ({ video }) => {
   const router = useRouter();
-  const { query } = router;
+  const videoId = router.query?.videoId;
+
+  const [like, setLike] = useState(false);
+  const [dislike, setDislike] = useState(false);
 
   const {
     title,
@@ -40,6 +47,53 @@ const VideoInfo = ({ video }) => {
     channelTitle,
     statistics: { viewCount } = { viewCount: 0 },
   } = video;
+
+  useEffect(() => {
+    const handleGetStats = async () => {
+      const response = await fetch(`/api/stats?videoId=${videoId}`, {
+        method: "GET",
+      });
+      const res = await response.json();
+      if (res.data.length > 0) {
+        const favourited = res.data[0].favourited;
+        if (favourited === 1) {
+          setLike(true);
+        } else if (favourited === 0) {
+          setDislike(true);
+        }
+      }
+    };
+
+    handleGetStats();
+  }, [videoId]);
+
+  const updateRating = async (favourited) => {
+    const response = await fetch("/api/stats", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        videoId,
+        favourited,
+      }),
+    });
+    return response;
+  };
+
+  const handleToggleLike = async () => {
+    setLike(true);
+    setDislike(false);
+    const res = await updateRating(1);
+    console.log(res);
+  };
+
+  const handleToggleDislike = async () => {
+    setDislike(true);
+    setLike(false);
+    const res = await updateRating(0);
+    console.log(res);
+  };
 
   return (
     <div className={styles.container}>
@@ -58,10 +112,22 @@ const VideoInfo = ({ video }) => {
           type="text/html"
           width="100%"
           height="360"
-          src={`https://www.youtube.com/embed/${query.videoId}?autoplay=0&origin=http://example.com&controls=1&rel=1`}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=0&origin=http://example.com&controls=1&rel=1`}
           frameBorder="0"
         />
 
+        <div className={styles.likeDislikeBtnWrapper}>
+          <button onClick={handleToggleLike}>
+            <div className={cls(styles.btnWrapper, styles.likeBtnWrapper)}>
+              <Like selected={like} />
+            </div>
+          </button>
+          <button onClick={handleToggleDislike}>
+            <div className={styles.btnWrapper}>
+              <DisLike selected={dislike} />
+            </div>
+          </button>
+        </div>
         <div className={styles.modalBody}>
           <div className={styles.modalBodyContent}>
             <div className={styles.col1}>

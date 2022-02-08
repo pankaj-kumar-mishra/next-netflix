@@ -13,6 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [userMsg, setUserMsg] = useState("");
 
+  // NOTE  router listener
   useEffect(() => {
     const handleComplete = () => {
       setLoading(false);

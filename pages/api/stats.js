@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
 import {
   findVideoIdByUser,
   insertStats,
   updateStats,
 } from "../../lib/db/hasura";
+import { verifyToken } from "../../lib/jwt";
 
 const stats = async (req, res) => {
   if (req.method === "POST") {
@@ -11,24 +11,19 @@ const stats = async (req, res) => {
       const token = req.cookies?.token;
       const { videoId, favourited, watched = true } = req.body;
       // console.log(token);
-      // [x] check token exists or not
+      // 1 check token exists or not
       if (!token || !videoId) {
         res
           .status(403)
           .json({ status: false, message: "Invalid token or invalid videoId" });
         return;
       }
-      // [x] decode the token using our db secret
-      const decodedToken = jwt.verify(
-        token,
-        process.env.HASURA_GRAPHQL_JWT_SECRET
-      );
-      // [x] if token valid then fetch for stats record for that specific user
-      const userId = decodedToken.issuer;
+      // 2 if token valid then fetch for stats record for that specific user
+      const userId = verifyToken(token);
       const videoInfo = await findVideoIdByUser(token, userId, videoId);
       // console.log(videoInfo);
-      // [x] if stats record NOT found then insert a new record
-      // [x] if stats record found then update that record
+      // 3 if stats record NOT found then insert a new record
+      // 4 if stats record found then update that record
       let newRecord = null;
       if (videoInfo?.length === 0) {
         newRecord = await insertStats(token, {
@@ -60,20 +55,16 @@ const stats = async (req, res) => {
       const token = req.cookies?.token;
       const videoId = req.query?.videoId;
       // console.log(token);
-      // [x] check token exists or not
+      // 1 check token exists or not
       if (!token || !videoId) {
         res
           .status(403)
           .json({ status: false, message: "Invalid token or invalid videoId" });
         return;
       }
-      // [x] decode the token using our db secret
-      const decodedToken = jwt.verify(
-        token,
-        process.env.HASURA_GRAPHQL_JWT_SECRET
-      );
-      // [x] if token valid then fetch for stats record for that specific user
-      const userId = decodedToken.issuer;
+
+      // 2 if token valid then fetch for stats record for that specific user
+      const userId = verifyToken(token);
       const videoInfo = await findVideoIdByUser(token, userId, videoId);
       // console.log(videoInfo);
       res.status(200).json({

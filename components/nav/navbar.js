@@ -10,37 +10,53 @@ const NavBar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
-  const handleGetEmail = async () => {
-    try {
-      const userData = await magic.user.getMetadata();
-      // console.log({ userData });
-      // console.log(await magic.user.generateIdToken());
-      if (userData.email) {
-        setUserEmail(userData.email);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const handleGetEmail = async () => {
+      try {
+        const userData = await magic.user.getMetadata();
+        // console.log({ userData });
+        // console.log(await magic.user.generateIdToken());
+        if (userData.email) {
+          setUserEmail(userData.email);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     handleGetEmail();
   }, []);
 
+  // const handleLogout = async () => {
+  //   try {
+  //     await magic.user.logout();
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     router.replace("/login");
+  //   }
+  // };
+
   const handleLogout = async () => {
     try {
-      await magic.user.logout();
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      await response.json();
     } catch (error) {
-      console.log(error);
-    } finally {
-      router.replace("/login");
+      console.error("Error logging out", error);
+      router.push("/login");
     }
   };
 
   const handleOnClickMyList = (e) => {
     e.preventDefault();
     console.log("MyList Link clicked");
-    router.push("/browse/mylist");
+    router.push("/browse/my-list");
   };
 
   const handleShowDropdown = () => {

@@ -3,4 +3,5 @@
   "rules": {
     "no-unused-vars": "warn"
   }
+  //"ignorePatterns": ["final/*"]
 }
